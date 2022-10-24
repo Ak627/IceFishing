@@ -1,0 +1,92 @@
+import pygame
+import random
+import IceFunctions
+
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Ice Fishing")
+clock = pygame.time.Clock()
+PlayingGame = True
+
+IceFunctions.PlayIntro()
+
+
+class fish:
+
+    def __init__(self):
+        self.xpos = random.randrange(0, 700)
+        self.ypos = random.randrange(100, 450)
+        self.Vx = random.randrange(-3, 3)
+        self.Vy = random.randrange(-3, 3)
+        self.ticker = random.randrange(0, 100)
+        self.red = random.randrange(0, 100)
+        self.green = random.randrange(0, 250)
+        self.blue = random.randrange(50, 200)
+        self.onHook = False
+        self.dead = False
+
+    def draw(self):
+        if self.Vx < 0:
+            pygame.draw.ellipse(screen, (self.red, self.green, self.blue),
+                                (self.xpos, self.ypos, 50, 30))
+            pygame.draw.polygon(screen, (self.red, self.green, self.blue),
+                                ((self.xpos + 40, self.ypos + 15),
+                                 (self.xpos + 60, self.ypos - 5),
+                                 (self.xpos + 60, self.ypos + 35)))
+            pygame.draw.circle(screen, (255, 255, 255),
+                               (self.xpos + 10, self.ypos + 15), 7)
+
+        else:
+            pygame.draw.ellipse(screen, (self.red, self.green, self.blue),
+                                (self.xpos, self.ypos, 50, 30))
+            pygame.draw.polygon(screen, (self.red, self.green, self.blue),
+                                ((self.xpos + 10, self.ypos + 15),
+                                 (self.xpos - 10, self.ypos - 5),
+                                 (self.xpos - 10, self.ypos + 35)))
+            pygame.draw.circle(screen, (255, 255, 255),
+                               (self.xpos + 40, self.ypos + 15), 7)
+
+    def move(self):
+        if self.xpos > 800:
+            self.xpos = 800
+            self.Vx *= -1
+        if self.xpos < 0:
+            self.xpos = 0
+            self.Vx *= -1
+        if self.ypos > 600:
+            self.ypos = 600
+            self.Vy *= -1
+        if self.ypos < 0:
+            self.ypos = 0
+            self.Vy *= -1
+        self.ticker += 1
+        if self.ticker > 100:
+            self.Vx = random.randrange(-2, 3)
+            self.Vy = random.randrange(-2, 3)
+            self.ticker = 0
+        self.xpos += self.Vx
+        self.ypos += self.Vy
+
+
+Pond = []
+
+for i in range(20):
+    Pond.append(fish())
+
+while PlayingGame:
+    clock.tick(60)
+    events = pygame.event.get()
+
+    for event in events:
+        if event.type == pygame.QUIT:
+            PlayingGame = False
+
+    for i in range(len(Pond)):
+        Pond[i].move()
+
+    screen.fill((54, 139, 193))
+    for i in range(len(Pond)):
+        Pond[i].draw()
+    pygame.display.flip()
+pygame.quit()
+
